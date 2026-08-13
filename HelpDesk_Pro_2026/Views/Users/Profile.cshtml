@@ -1,0 +1,22 @@
+﻿@model HelpDesk_Pro_2026.Models.Usuario
+
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Mi Perfil";
+}
+
+<div class="p-8">
+
+    <h1 class="text-3xl font-bold">
+        Mi Perfil
+    </h1>
+
+    <p>
+        @Model.FullName
+    </p>
+
+    <p>
+        @Model.Email
+    </p>
+
+</div>

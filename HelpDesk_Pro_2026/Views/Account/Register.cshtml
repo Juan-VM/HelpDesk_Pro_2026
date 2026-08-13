@@ -1,0 +1,200 @@
+﻿@{
+    ViewData["Title"] = "Crear Cuenta";
+}
+
+@model HelpDesk_Pro_2026.Models.RegisterViewModel;
+
+<!DOCTYPE html>
+
+<html class="light" lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+        darkMode: "class",
+        theme: {
+        extend: {
+        "colors": {
+        "on-secondary": "#ffffff",
+        "secondary": "#006c49",
+        "on-tertiary-fixed": "#2a1700",
+        "inverse-surface": "#213145",
+        "on-background": "#0b1c30",
+        "on-secondary-container": "#00714d",
+        "on-tertiary-fixed-variant": "#653e00",
+        "on-tertiary": "#ffffff",
+        "surface-variant": "#d3e4fe",
+        "surface": "#f8f9ff",
+        "on-surface": "#0b1c30",
+        "tertiary": "#603b00",
+        "error": "#ba1a1a",
+        "surface-bright": "#f8f9ff",
+        "on-primary-fixed-variant": "#0040a2",
+        "on-primary": "#ffffff",
+        "surface-dim": "#cbdbf5",
+        "surface-container": "#e5eeff",
+        "surface-container-low": "#eff4ff",
+        "primary-fixed-dim": "#b2c5ff",
+        "on-surface-variant": "#434654",
+        "on-secondary-fixed": "#002113",
+        "inverse-primary": "#b2c5ff",
+        "on-primary-container": "#c4d2ff",
+        "inverse-on-surface": "#eaf1ff",
+        "on-error": "#ffffff",
+        "surface-container-high": "#dce9ff",
+        "surface-tint": "#0c56d0",
+        "on-error-container": "#93000a",
+        "primary-container": "#0052cc",
+        "surface-container-highest": "#d3e4fe",
+        "secondary-container": "#6cf8bb",
+        "on-tertiary-container": "#ffc988",
+        "on-secondary-fixed-variant": "#005236",
+        "tertiary-fixed-dim": "#ffb95f",
+        "primary-fixed": "#dae2ff",
+        "outline-variant": "#c3c6d6",
+        "secondary-fixed": "#6ffbbe",
+        "error-container": "#ffdad6",
+        "primary": "#003d9b",
+        "background": "#f8f9ff",
+        "surface-container-lowest": "#ffffff",
+        "tertiary-container": "#805000",
+        "secondary-fixed-dim": "#4edea3",
+        "tertiary-fixed": "#ffddb8",
+        "on-primary-fixed": "#001848",
+        "outline": "#737685"
+        },
+        "borderRadius": {
+        "DEFAULT": "0.125rem",
+        "lg": "0.25rem",
+        "xl": "0.5rem",
+        "full": "0.75rem"
+        },
+        "spacing": {
+        "gutter": "16px",
+        "unit": "4px",
+        "sidebar-width": "260px",
+        "container-padding": "24px",
+        "sidebar-collapsed": "64px"
+        },
+        "fontFamily": {
+        "display": ["Inter"],
+        "body-md": ["Inter"],
+        "label-md": ["Inter"],
+        "headline-lg": ["Inter"],
+        "label-sm": ["Inter"],
+        "headline-md": ["Inter"],
+        "body-lg": ["Inter"]
+        },
+        "fontSize": {
+        "display": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+        "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+        "label-sm": ["11px", { "lineHeight": "14px", "fontWeight": "500" }],
+        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+        }
+        }
+        }
+        }
+    </script>
+    <style>
+        body {
+        font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-surface-dim min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-3xl bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden flex flex-col">
+        <!-- Header -->
+        <div class="px-8 pt-8 pb-6 text-center border-b border-outline-variant bg-surface-bright">
+            <div class="inline-flex justify-center items-center mb-4">
+                <img alt="HelpDesk Pro Logo" class="w-30 h-30 rounded-DEFAULT object-cover" src="~/lib/screen.png" />
+            </div>
+            <h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">Crear cuenta</h1>
+            <p class="font-body-md text-body-md text-on-surface-variant">Únete a HelpDesk Pro 2026 para gestionar tus tickets de soporte.</p>
+        </div>
+        <!-- Form -->
+        <div class="p-8">
+            @if (ViewBag.Error != null)
+            {
+                <div class="mb-5 p-4 rounded-lg bg-red-50 border border-red-200 text-red-700">
+                    @ViewBag.Error
+                </div>
+            }
+
+            @if (TempData["Success"] != null)
+            {
+                <div class="mb-5 p-4 rounded-lg bg-green-50 border border-green-200 text-green-700">
+                    @TempData["Success"]
+                </div>
+            }
+
+
+
+            <form asp-action="Register" method="post" class="space-y-5">
+                <!-- Full Name -->
+                <div>
+                    <label asp-for="Name"
+                        class="block font-label-md text-label-md text-on-surface mb-1.5">Nombre completo</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span class="material-symbols-outlined text-outline text-[20px]" data-icon="person">person</span>
+                        </div>
+                        <input asp-for="Name"
+                            class="block w-full pl-10 pr-3 py-2 border border-outline-variant rounded bg-surface text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors placeholder:text-outline"
+                            placeholder="Ej. Juan Pérez" required="" type="text" />
+                    </div>
+                </div>
+                <!-- Email -->
+                <div>
+                    <label asp-for="Email"
+                        class="block font-label-md text-label-md text-on-surface mb-1.5">Correo electrónico</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span class="material-symbols-outlined text-outline text-[20px]" data-icon="mail">mail</span>
+                        </div>
+                        <input asp-for="Email"
+                            class="block w-full pl-10 pr-3 py-2 border border-outline-variant rounded bg-surface text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors placeholder:text-outline"
+                            placeholder="juan@empresa.com" required="" type="email" />
+                    </div>
+                </div>
+                <!-- Password -->
+                <div>
+                    <label asp-for="Password"
+                        class="block font-label-md text-label-md text-on-surface mb-1.5">Contraseña</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span class="material-symbols-outlined text-outline text-[20px]" data-icon="lock">lock</span>
+                        </div>
+                        <input asp-for="Password"
+                            class="block w-full pl-10 pr-3 py-2 border border-outline-variant rounded bg-surface text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors placeholder:text-outline"
+                            placeholder="••••••••" required="" type="password" />
+                    </div>
+                </div>
+                <!-- Role -->
+                
+                <!-- Submit Button -->
+                <div class="pt-2">
+                    <button class="w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded shadow-sm font-label-md text-label-md text-on-primary bg-primary-container hover:bg-surface-tint focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors"
+                        type="submit">
+                        Registrarse
+                    </button>
+                </div>
+            </form>
+        </div>
+        <!-- Footer -->
+        <div class="px-8 py-4 bg-surface-container-low border-t border-outline-variant text-center">
+            <a asp-controller="Account"
+               asp-action="Login" 
+               class="font-body-md text-body-md text-primary font-medium hover:text-surface-tint transition-colors">
+                ¿Ya tienes cuenta? Inicia sesión
+            </a>
+        </div>
+    </div>
+</body></html>
