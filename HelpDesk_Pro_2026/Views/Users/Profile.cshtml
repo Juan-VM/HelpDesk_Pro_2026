@@ -1,22 +1,517 @@
-﻿@model HelpDesk_Pro_2026.Models.Usuario
+﻿@model HelpDesk_Pro_2026.Models.EditProfileViewModel
 
 @{
     Layout = "_DashboardLayout";
     ViewData["Title"] = "Mi Perfil";
+
+    var photoUrl = string.IsNullOrEmpty(Model.PhotoUrl)
+        ? "https://dgrlsgmyefeijwczbyfi.supabase.co/storage/v1/object/public/profile-photos/default-user.png"
+        : Model.PhotoUrl;
 }
 
-<div class="p-8">
+<!DOCTYPE html>
 
-    <h1 class="text-3xl font-bold">
-        Mi Perfil
-    </h1>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Registro de Usuario - HelpDesk Pro</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+        darkMode: "class",
+        theme: {
+        extend: {
+        "colors": {
+        "on-secondary-fixed": "#002113",
+        "background": "#f8f9ff",
+        "surface-container-highest": "#d3e4fe",
+        "surface-tint": "#0c56d0",
+        "tertiary-fixed": "#ffddb8",
+        "surface-bright": "#f8f9ff",
+        "surface-container": "#e5eeff",
+        "primary-fixed-dim": "#b2c5ff",
+        "surface-variant": "#d3e4fe",
+        "on-error-container": "#93000a",
+        "surface-container-low": "#eff4ff",
+        "on-primary-fixed": "#001848",
+        "on-surface": "#0b1c30",
+        "on-primary": "#ffffff",
+        "surface-container-lowest": "#ffffff",
+        "on-secondary-fixed-variant": "#005236",
+        "secondary-fixed-dim": "#4edea3",
+        "surface": "#f8f9ff",
+        "on-secondary-container": "#00714d",
+        "on-tertiary": "#ffffff",
+        "on-tertiary-container": "#ffc988",
+        "surface-container-high": "#dce9ff",
+        "on-surface-variant": "#434654",
+        "on-error": "#ffffff",
+        "error-container": "#ffdad6",
+        "on-tertiary-fixed": "#2a1700",
+        "outline-variant": "#c3c6d6",
+        "secondary-fixed": "#6ffbbe",
+        "on-secondary": "#ffffff",
+        "inverse-on-surface": "#eaf1ff",
+        "tertiary": "#603b00",
+        "on-primary-container": "#c4d2ff",
+        "inverse-surface": "#213145",
+        "outline": "#737685",
+        "primary-container": "#0052cc",
+        "surface-dim": "#cbdbf5",
+        "primary": "#003d9b",
+        "tertiary-container": "#805000",
+        "secondary-container": "#6cf8bb",
+        "on-primary-fixed-variant": "#0040a2",
+        "tertiary-fixed-dim": "#ffb95f",
+        "inverse-primary": "#b2c5ff",
+        "secondary": "#006c49",
+        "on-background": "#0b1c30",
+        "on-tertiary-fixed-variant": "#653e00",
+        "error": "#ba1a1a",
+        "primary-fixed": "#dae2ff"
+        },
+        "borderRadius": {
+        "DEFAULT": "0.125rem",
+        "lg": "0.25rem",
+        "xl": "0.5rem",
+        "full": "0.75rem"
+        },
+        "spacing": {
+        "unit": "4px",
+        "container-padding": "24px",
+        "sidebar-collapsed": "64px",
+        "gutter": "16px",
+        "sidebar-width": "260px"
+        },
+        "fontFamily": {
+        "body-lg": ["Inter"],
+        "label-sm": ["Inter"],
+        "display": ["Inter"],
+        "body-md": ["Inter"],
+        "headline-lg": ["Inter"],
+        "label-md": ["Inter"],
+        "headline-md": ["Inter"]
+        },
+        "fontSize": {
+        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+        "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "500"}],
+        "display": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+        "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}]
+        }
+        },
+        },
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface flex min-h-screen">
 
-    <p>
-        @Model.FullName
-    </p>
 
-    <p>
-        @Model.Email
-    </p>
 
-</div>
+        <main class="flex-1 pt-24 pb-12 px-container-padding max-w-4xl mx-auto w-full">
+
+            <!-- TÍTULO -->
+            <div class="mb-8">
+
+                <h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">
+                    Mi Perfil
+                </h1>
+
+                <p class="font-body-md text-body-md text-on-surface-variant">
+                    Administra tu información personal y configuración de seguridad.
+                </p>
+
+            </div>
+
+
+            <!-- MENSAJE DE ÉXITO -->
+            @if (TempData["Success"] != null)
+            {
+                <div class="mb-6 p-4 rounded-lg border border-green-300 bg-green-50 text-green-700">
+                    <div class="flex items-center gap-2">
+
+                        <span class="material-symbols-outlined">
+                            check_circle
+                        </span>
+
+                        <span>
+                            @TempData["Success"]
+                        </span>
+
+                    </div>
+                </div>
+            }
+
+
+            <!-- ERRORES GENERALES -->
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="mb-6 p-4 rounded-lg border border-red-300 bg-red-50 text-red-700">
+
+                    <div class="flex items-center gap-2 mb-2">
+
+                        <span class="material-symbols-outlined">
+                            error
+                        </span>
+
+                        <span class="font-semibold">
+                            Revisa los siguientes errores:
+                        </span>
+
+                    </div>
+
+                    <div asp-validation-summary="All"></div>
+
+                </div>
+            }
+
+
+            <!-- CARD -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-8 shadow-sm">
+
+                <form asp-controller="Users"
+                      asp-action="Profile"
+                      method="post"
+                      enctype="multipart/form-data"
+                      class="space-y-6">
+
+                    @Html.AntiForgeryToken()
+
+                    <!-- ============================= -->
+                    <!-- FOTO DE PERFIL -->
+                    <!-- ============================= -->
+
+                    <div class="flex flex-col md:flex-row items-center gap-6 pb-8 mb-8 border-b border-outline-variant">
+
+                        <!-- Avatar -->
+                        <div class="relative group">
+
+                            <img id="profilePreview"
+                                 src="@photoUrl"
+                                 alt="Foto de perfil"
+                                 class="h-24 w-24 rounded-full object-cover border-2 border-primary" />
+
+                            <!-- Botón editar -->
+                            <button type="button"
+                                    onclick="document.getElementById('photoInput').click()"
+                                    class="absolute bottom-0 right-0 bg-primary text-on-primary p-1.5 rounded-full shadow-sm hover:bg-primary-container transition-colors">
+
+                                <span class="material-symbols-outlined text-sm">
+                                    edit
+                                </span>
+
+                            </button>
+
+                            <!-- Input de archivo -->
+                            <input id="photoInput"
+                                   asp-for="Photo"
+                                   type="file"
+                                   accept="image/png,image/jpeg,image/jpg"
+                                   class="hidden" />
+                        </div>
+
+
+                        <!-- Información -->
+                        <div class="flex-1 text-center md:text-left">
+
+                            <h2 class="font-headline-md text-headline-md text-on-surface">
+                                @Model.FullName
+                            </h2>
+
+                            <p class="font-body-md text-body-md text-on-surface-variant">
+                                @Model.Role
+                            </p>
+
+                            <!-- Botón cambiar foto -->
+                            <button type="button"
+                                    onclick="document.getElementById('photoInput').click()"
+                                    class="mt-4 px-4 py-2 rounded-lg border border-outline-variant text-primary font-label-md text-label-md hover:bg-surface-container-low transition-colors">
+                                Cambiar foto
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ============================= -->
+                    <!-- DATOS DEL USUARIO -->
+                    <!-- ============================= -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                        <!-- NOMBRE -->
+                        <div class="space-y-2">
+
+                            <label asp-for="FullName"
+                                   class="block font-label-md text-label-md text-on-surface">
+
+                                Nombre Completo
+
+                            </label>
+
+                            <input asp-for="FullName"
+                                   class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2.5 font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-shadow" />
+
+                            <span asp-validation-for="FullName"
+                                  class="text-sm text-red-600">
+                            </span>
+                        </div>
+
+                        <!-- EMAIL -->
+                        <div class="space-y-2">
+
+                            <label asp-for="Email"
+                                   class="block font-label-md text-label-md text-on-surface">
+
+                                Correo Electrónico
+
+                            </label>
+
+                            <input asp-for="Email"
+                                   disabled
+                                   class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-2.5 font-body-md text-body-md text-outline cursor-not-allowed" />
+
+                            <p class="text-xs text-on-surface-variant">
+                                El correo está administrado por Supabase Authentication.
+                            </p>
+                        </div>
+
+                        <!-- ROL -->
+                        <div class="space-y-2 md:col-span-2">
+
+                            <label asp-for="Role"
+                                   class="block font-label-md text-label-md text-on-surface">
+                                Rol
+                            </label>
+
+                            <input asp-for="Role"
+                                   disabled
+                                   class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-2.5 font-body-md text-body-md text-outline cursor-not-allowed" />
+
+                            <p class="text-xs text-on-surface-variant">
+                                El rol solamente puede ser administrado por un super usuario.
+                            </p>
+
+                        </div>
+
+                        <!-- ============================= -->
+                        <!-- CAMBIO DE CONTRASEÑA -->
+                        <!-- ============================= -->
+
+                        <div class="md:col-span-2 pt-4 border-t border-outline-variant">
+
+                            <h3 class="font-headline-md text-headline-md text-on-surface mb-2">
+                                Cambiar contraseña
+                            </h3>
+
+                            <p class="text-sm text-on-surface-variant mb-6">
+                                Si no deseas cambiar tu contraseña, puedes dejar estos campos vacíos.
+                            </p>
+                        </div>
+
+
+                        <!-- CONTRASEÑA ACTUAL -->
+                        <div class="space-y-2 md:col-span-2">
+
+                            <label asp-for="CurrentPassword"
+                                   class="block font-label-md text-label-md text-on-surface">
+                                Contraseña Actual
+                            </label>
+
+                            <div class="relative">
+
+                                <input asp-for="CurrentPassword"
+                                       id="currentPassword"
+                                       placeholder="••••••••"
+                                       type="password"
+                                       class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg pl-4 pr-12 py-2.5 font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-shadow" />
+
+                                <button type="button"
+                                        onclick="togglePassword('currentPassword', 'currentIcon')"
+                                        class="absolute right-3 top-1/2 -translate-y-1/2 text-outline-variant hover:text-on-surface transition-colors">
+
+                                    <span id="currentIcon"
+                                          class="material-symbols-outlined text-xl">
+
+                                        visibility_off
+                                    </span>
+                                </button>
+                            </div>
+
+                            <span asp-validation-for="CurrentPassword"
+                                  class="text-sm text-red-600">
+                            </span>
+                        </div>
+
+
+                        <!-- NUEVA CONTRASEÑA -->
+                        <div class="space-y-2">
+
+                            <label asp-for="NewPassword"
+                                   class="block font-label-md text-label-md text-on-surface">
+
+                                Nueva Contraseña
+                            </label>
+
+                            <div class="relative">
+                                <input asp-for="NewPassword"
+                                       id="newPassword"
+                                       placeholder="••••••••"
+                                       type="password"
+                                       class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2.5 font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-shadow" />
+                             </div>
+
+                            <span asp-validation-for="NewPassword"
+                                  class="text-sm text-red-600">
+                            </span>
+                        </div>
+
+
+                        <!-- CONFIRMAR -->
+                        <div class="space-y-2">
+
+                            <label asp-for="ConfirmPassword"
+                                   class="block font-label-md text-label-md text-on-surface">
+
+                                Confirmar Nueva Contraseña
+
+                            </label>
+
+                            <input asp-for="ConfirmPassword"
+                                   id="confirmPassword"
+                                   placeholder="••••••••"
+                                   type="password"
+                                   class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2.5 font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-shadow" />
+
+                            <span asp-validation-for="ConfirmPassword"
+                                  class="text-sm text-red-600">
+                            </span>
+                        </div>
+                    </div>
+
+
+                    <!-- ============================= -->
+                    <!-- BOTONES -->
+                    <!-- ============================= -->
+                    <div class="pt-6 mt-6 border-t border-outline-variant flex justify-end gap-4">
+
+                        <a asp-controller="Home"
+                           asp-action="Index"
+                           class="px-6 py-2.5 rounded-lg border border-outline-variant text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-low transition-colors">
+
+                            Cancelar
+                        </a>
+
+                        <button type="submit"
+                                class="px-6 py-2.5 rounded-lg bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-colors shadow-sm flex items-center gap-2">
+
+                            Guardar cambios
+
+                            <span class="material-symbols-outlined text-sm">
+                                check
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    
+
+
+    @section Scripts {
+
+        <partial name="_ValidationScriptsPartial" />
+
+        <script>
+
+            // ==========================================
+            // PREVISUALIZAR FOTO
+            // ==========================================
+
+            document
+            .getElementById("photoInput")
+            .addEventListener("change", function (event) {
+
+            const file = event.target.files[0];
+
+            if (!file)
+            return;
+
+            const allowedTypes = [
+            "image/jpeg",
+            "image/png",
+            "image/webp"
+            ];
+
+            if (!allowedTypes.includes(file.type)) {
+
+            alert("Selecciona una imagen JPG, PNG o WEBP.");
+
+            event.target.value = "";
+
+            return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+
+            alert("La imagen no puede superar los 5 MB.");
+
+            event.target.value = "";
+
+            return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+
+            document
+            .getElementById("profilePreview")
+            .src = e.target.result;
+
+            };
+
+            reader.readAsDataURL(file);
+
+            });
+
+
+            // ==========================================
+            // MOSTRAR / OCULTAR CONTRASEÑA
+            // ==========================================
+
+            function togglePassword(inputId, iconId) {
+
+            const input =
+            document.getElementById(inputId);
+
+            const icon =
+            document.getElementById(iconId);
+
+            if (input.type === "password") {
+
+            input.type = "text";
+
+            icon.textContent = "visibility";
+
+            }
+            else {
+
+            input.type = "password";
+
+            icon.textContent = "visibility_off";
+
+            }
+            }
+
+        </script>
+    }
+</body>
+
+</html>
