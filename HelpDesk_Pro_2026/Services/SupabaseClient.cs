@@ -8,13 +8,13 @@ namespace HelpDesk_Pro_2026.Services
 
         private static string key = "sb_publishable_fpa4WoG6wyCD8d4LFoTy2w_lpFjud65";
 
-        private static Client? _client;
+        private static Supabase.Client? _client;
 
-        public static async Task<Client> GetClient()
+        public static async Task<Supabase.Client> GetClient()
         {
             if (_client == null)
             {
-                _client = new Client(url, key);
+                _client = new Supabase.Client(url, key);
 
                 await _client.InitializeAsync();
             }

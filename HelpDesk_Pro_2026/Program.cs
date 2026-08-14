@@ -2,13 +2,29 @@ using HelpDesk_Pro_2026.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddScoped<UserService>();
-builder.Services.AddScoped<AuthService>();
+// Session
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromHours(2);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
-builder.Services.AddSession();
+// Supabase
+builder.Services.AddSingleton<Supabase.Client>(serviceProvider =>
+{
+    return SupabClient.GetClient().GetAwaiter().GetResult();
+});
+
+// Services
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<StorageService>();
+
 
 var app = builder.Build();
 
@@ -22,7 +38,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
-
+app.UseStaticFiles();
 app.UseSession();
 
 app.UseAuthorization();
