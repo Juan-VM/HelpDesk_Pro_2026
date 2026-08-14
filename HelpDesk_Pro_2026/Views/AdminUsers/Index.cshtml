@@ -1,0 +1,517 @@
+﻿@model List<HelpDesk_Pro_2026.Models.Usuario>
+
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Administrar Usuarios";
+}
+
+
+
+<!DOCTYPE html>
+
+<html class="h-full" lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>HelpDesk Pro - User Administration</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+          rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+          rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+        darkMode: "class",
+        theme: {
+        extend: {
+        "colors": {
+        "surface-container-high": "#dce9ff",
+        "inverse-on-surface": "#eaf1ff",
+        "on-background": "#0b1c30",
+        "primary": "#003d9b",
+        "tertiary-fixed-dim": "#ffb95f",
+        "on-tertiary-fixed-variant": "#653e00",
+        "on-surface-variant": "#434654",
+        "primary-container": "#0052cc",
+        "on-secondary-fixed-variant": "#005236",
+        "tertiary-container": "#805000",
+        "surface-container": "#e5eeff",
+        "outline": "#737685",
+        "surface-dim": "#cbdbf5",
+        "surface-container-highest": "#d3e4fe",
+        "inverse-surface": "#213145",
+        "on-secondary-container": "#00714d",
+        "error-container": "#ffdad6",
+        "on-tertiary-container": "#ffc988",
+        "surface": "#f8f9ff",
+        "primary-fixed": "#dae2ff",
+        "surface-container-lowest": "#ffffff",
+        "surface-bright": "#f8f9ff",
+        "on-error": "#ffffff",
+        "secondary-fixed": "#6ffbbe",
+        "inverse-primary": "#b2c5ff",
+        "tertiary": "#603b00",
+        "error": "#ba1a1a",
+        "secondary-fixed-dim": "#4edea3",
+        "secondary-container": "#6cf8bb",
+        "on-secondary": "#ffffff",
+        "on-error-container": "#93000a",
+        "surface-variant": "#d3e4fe",
+        "on-primary-container": "#c4d2ff",
+        "outline-variant": "#c3c6d6",
+        "on-tertiary-fixed": "#2a1700",
+        "primary-fixed-dim": "#b2c5ff",
+        "on-primary": "#ffffff",
+        "on-primary-fixed-variant": "#0040a2",
+        "tertiary-fixed": "#ffddb8",
+        "on-primary-fixed": "#001848",
+        "surface-container-low": "#eff4ff",
+        "on-secondary-fixed": "#002113",
+        "secondary": "#006c49",
+        "surface-tint": "#0c56d0",
+        "background": "#f8f9ff",
+        "on-surface": "#0b1c30",
+        "on-tertiary": "#ffffff"
+        },
+        "borderRadius": {
+        "DEFAULT": "0.125rem",
+        "lg": "0.25rem",
+        "xl": "0.5rem",
+        "full": "0.75rem"
+        },
+        "spacing": {
+        "sidebar-width": "260px",
+        "container-padding": "24px",
+        "unit": "4px",
+        "sidebar-collapsed": "64px",
+        "gutter": "16px"
+        },
+        "fontFamily": {
+        "body-lg": ["Inter", "sans-serif"],
+        "label-sm": ["Inter", "sans-serif"],
+        "headline-lg": ["Inter", "sans-serif"],
+        "headline-md": ["Inter", "sans-serif"],
+        "display": ["Inter", "sans-serif"],
+        "label-md": ["Inter", "sans-serif"],
+        "body-md": ["Inter", "sans-serif"]
+        },
+        "fontSize": {
+        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+        "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "500"}],
+        "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+        "display": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+        }
+        }
+        }
+        }
+    </script>
+
+</head>
+
+ 
+
+    
+        <div class="p-6 md:p-8 w-full">
+
+                <!-- CONTENEDOR DE TABLA -->
+
+                <div class="flex-1 mr-6 transition-all duration-300" id="table-container">
+
+                    <!-- TÍTULO -->
+
+                    <div class="mb-6">
+                        <h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">
+                            Administrar Usuarios
+                        </h1>
+
+                        <p class="font-body-md text-body-md text-on-surface-variant">
+                            Administra los roles de los usuarios del sistema.
+                        </p>
+                    </div>
+
+                    <!-- MENSAJE ÉXITO -->
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="mb-6 p-4 rounded-lg border border-green-300 bg-green-50 text-green-700">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined">
+                                    check_circle
+                                </span>
+
+                                <span>
+                                    @TempData["Success"]
+                                </span>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- MENSAJE ERROR -->
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="mb-6 p-4 rounded-lg border border-red-300 bg-red-50 text-red-700">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined">
+                                    error
+                                </span>
+
+                                <span>
+                                    @TempData["Error"]
+                                </span>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- TABLA -->
+
+                    <div class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="bg-surface-container-low border-b border-outline-variant">
+                                <tr>
+                                    <th class="py-3 px-4 font-label-md text-label-md text-on-surface-variant uppercase">
+                                        UID
+                                    </th>
+                                    <th class="py-3 px-4 font-label-md text-label-md text-on-surface-variant uppercase">
+                                        Nombre
+                                    </th>
+                                    <th class="py-3 px-4 font-label-md text-label-md text-on-surface-variant uppercase">
+                                        Correo
+                                    </th>
+                                    <th class="py-3 px-4 font-label-md text-label-md text-on-surface-variant uppercase">
+                                        Rol
+                                    </th>
+                                    <th class="py-3 px-4 font-label-md text-label-md text-on-surface-variant uppercase text-right">
+                                        Acciones
+                                    </th>
+                                </tr>
+                            </thead>
+
+
+                            <tbody class="divide-y divide-outline-variant font-body-md text-body-md text-on-surface">
+                                @foreach (var usuario in Model)
+                                {
+                                    <tr class="hover:bg-surface-container transition-colors group">
+
+                                        <!-- UID -->
+
+                                        <td class="py-3 px-4 font-mono text-xs text-outline">
+                                            @usuario.UserId
+                                        </td>
+
+                                        <!-- NOMBRE -->
+                                        <td class="py-3 px-4 font-medium">
+                                            @usuario.FullName
+                                        </td>
+
+                                        <!-- CORREO -->
+                                        <td class="py-3 px-4 text-on-surface-variant">
+                                            @usuario.Email
+                                        </td>
+
+                                        <!-- ROL -->
+
+                                        <td class="py-3 px-4">
+
+                                            @if (usuario.Role == "SOPORTE")
+                                            {
+                                                <span class="inline-flex items-center px-2 py-1 rounded bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm">
+                                                    SOPORTE
+                                                </span>
+                                            }
+                                            else if (usuario.Role == "EMPLEADO")
+                                            {
+                                                <span class="inline-flex items-center px-2 py-1 rounded bg-secondary-container text-on-secondary-container font-label-sm text-label-sm">
+                                                    EMPLEADO
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="inline-flex items-center px-2 py-1 rounded bg-primary-container text-on-primary-container font-label-sm text-label-sm">
+                                                    @usuario.Role
+                                                </span>
+                                            }
+                                        </td>
+
+
+                                        <!-- ACCIONES -->
+
+                                        <td class="py-3 px-4 text-right">
+
+                                            @if (usuario.Role != "SUPERUSUARIO")
+                                            {
+                                                <button type="button"
+                                                        class="text-primary hover:text-primary-container font-label-md text-label-md flex items-center justify-end space-x-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                        onclick="openEditPanel(
+                                                        '@usuario.UserId',
+                                                        '@System.Text.Json.JsonSerializer.Serialize(usuario.FullName)',
+                                                        '@System.Text.Json.JsonSerializer.Serialize(usuario.Email)',
+                                                        '@usuario.Role'
+                                                    )">
+
+                                                    <span class="material-symbols-outlined text-[16px]">
+                                                        edit
+                                                    </span>
+                                                    <span>
+                                                        Editar
+                                                    </span>
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-outline text-sm">
+                                                    Superusuario
+                                                </span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+                <!-- ========================================== -->
+                <!-- PANEL DE EDICIÓN -->
+                <!-- ========================================== -->
+
+                <div class="w-96 bg-surface-container-lowest border-l border-outline-variant shadow-[-4px_0_24px_-12px_rgba(0,0,0,0.1)] absolute right-0 top-0 h-full transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col z-30 hidden"
+                     id="edit-panel">
+
+                    <!-- HEADER PANEL -->
+
+                    <div class="p-6 border-b border-outline-variant flex justify-between items-center bg-surface">
+                        <div>
+                            <h3 class="font-headline-md text-headline-md text-on-surface">
+                                Editar Usuario
+                            </h3>
+
+                            <p class="font-body-md text-body-md text-on-surface-variant mt-1"
+                               id="panel-subtitle">
+                                Usuario
+                            </p>
+                        </div>
+
+                        <button type="button"
+                                class="text-outline hover:text-on-surface p-2 rounded-full hover:bg-surface-container transition-colors"
+                                onclick="closeEditPanel()">
+
+                            <span class="material-symbols-outlined">
+                                close
+                            </span>
+                        </button>
+                    </div>
+
+                    <!-- CONTENIDO -->
+
+                    <div class="p-6 flex-1 overflow-y-auto space-y-6">
+
+                        <!-- DATOS DEL USUARIO -->
+                        <div class="space-y-4 bg-surface-container-low p-4 rounded-lg border border-outline-variant">
+
+                            <!-- UID -->
+                            <div>
+                                <label class="block font-label-md text-label-md text-on-surface-variant mb-1">
+                                    UID
+                                </label>
+
+                                <input id="edit-uid"
+                                       readonly
+                                       type="text"
+                                       class="w-full bg-transparent border-none p-0 text-on-surface font-mono text-xs focus:ring-0 cursor-not-allowed" />
+                            </div>
+
+
+                            <!-- NOMBRE -->
+                            <div>
+                                <label class="block font-label-md text-label-md text-on-surface-variant mb-1">
+                                    Nombre
+                                </label>
+
+                                <input id="edit-nombre"
+                                       readonly
+                                       type="text"
+                                       class="w-full bg-transparent border-none p-0 text-on-surface font-body-md text-body-md focus:ring-0 cursor-not-allowed" />
+                            </div>
+
+
+                            <!-- CORREO -->
+                            <div>
+                                <label class="block font-label-md text-label-md text-on-surface-variant mb-1">
+                                    Correo
+                                </label>
+
+                                <input id="edit-correo"
+                                       readonly
+                                       type="text"
+                                       class="w-full bg-transparent border-none p-0 text-on-surface font-body-md text-body-md focus:ring-0 cursor-not-allowed" />
+                            </div>
+                        </div>
+
+                        <!-- FORMULARIO REAL -->
+                        <form id="role-form"
+                              asp-controller="AdminUsers"
+                              asp-action="UpdateRole"
+                              method="post">
+
+                            @Html.AntiForgeryToken()
+
+                            <input type="hidden"
+                                   id="form-user-id"
+                                   name="userId" />
+
+                            <!-- ROL -->
+                            <div>
+                                <label class="block font-label-md text-label-md text-on-surface mb-2"
+                                       for="edit-rol">
+                                    Rol del Sistema
+                                </label>
+
+                                <select class="w-full bg-surface-container-lowest border border-outline rounded px-3 py-2 text-on-surface font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors"
+                                        id="edit-rol"
+                                        name="role">
+
+                                    <option value="EMPLEADO">
+                                        EMPLEADO
+                                    </option>
+                                    <option value="SOPORTE">
+                                        SOPORTE
+                                    </option>
+                                </select>
+
+                                <p class="mt-2 text-outline font-label-sm text-label-sm">
+                                    Los cambios de rol se aplicarán cuando el usuario vuelva a iniciar sesión.
+                                </p>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- BOTONES -->
+                    <div class="p-6 border-t border-outline-variant bg-surface flex justify-end space-x-3">
+                        <button type="button"
+                                class="px-4 py-2 rounded font-label-md text-label-md font-semibold text-on-surface-variant border border-outline-variant hover:bg-surface-container transition-colors"
+                                onclick="closeEditPanel()">
+
+                            Cancelar
+                        </button>
+                        <button type="button"
+                                id="save-button"
+                                class="px-4 py-2 rounded font-label-md text-label-md font-semibold bg-primary text-on-primary hover:bg-primary-container transition-colors"
+                                onclick="saveChanges()">
+
+                            Guardar cambios
+                        </button>
+                    </div>
+                </div>
+        </div>
+
+
+    @section Scripts
+    {
+
+        <script>
+
+            const editPanel =
+            document.getElementById('edit-panel');
+
+            const tableContainer =
+            document.getElementById('table-container');
+
+
+            // ==========================================
+            // ABRIR PANEL
+            // ==========================================
+
+            function openEditPanel(
+            uid,
+            nombre,
+            correo,
+            rol
+            )
+            {
+            document.getElementById('edit-uid').value =
+            uid;
+
+            document.getElementById('panel-subtitle').innerText =
+            uid;
+
+            document.getElementById('edit-nombre').value =
+            JSON.parse(nombre);
+
+            document.getElementById('edit-correo').value =
+            JSON.parse(correo);
+
+            document.getElementById('edit-rol').value =
+            rol;
+
+            document.getElementById('form-user-id').value =
+            uid;
+
+
+            // Mostrar panel
+
+            editPanel.classList.remove('hidden');
+
+
+            setTimeout(() =>
+            {
+            editPanel.classList.remove('translate-x-full');
+
+            tableContainer.classList.add('mr-96');
+
+            }, 10);
+            }
+
+
+            // ==========================================
+            // CERRAR PANEL
+            // ==========================================
+
+            function closeEditPanel()
+            {
+            editPanel.classList.add('translate-x-full');
+
+            tableContainer.classList.remove('mr-96');
+
+
+            setTimeout(() =>
+            {
+            editPanel.classList.add('hidden');
+
+            }, 300);
+            }
+
+
+            // ==========================================
+            // GUARDAR CAMBIOS
+            // ==========================================
+
+            function saveChanges()
+            {
+            const form =
+            document.getElementById('role-form');
+
+            const button =
+            document.getElementById('save-button');
+
+
+            // Evitar doble clic
+
+            button.disabled = true;
+
+            button.innerHTML =
+            '<span class="material-symbols-outlined animate-spin text-[18px]">sync</span>';
+
+
+            form.submit();
+            }
+
+        </script>
+
+    }
+
+
+
+</html>

@@ -42,6 +42,20 @@ namespace HelpDesk_Pro_2026.Services
 
 
         // ==========================================
+        // OBTENER TODOS LOS USUARIOS
+        // ==========================================
+
+        public async Task<List<Usuario>> ObtenerUsuarios()
+        {
+            var response = await _client
+                .From<Usuario>()
+                .Get();
+
+            return response.Models;
+        }
+
+
+        // ==========================================
         // CREAR PERFIL
         // ==========================================
 
@@ -118,6 +132,36 @@ namespace HelpDesk_Pro_2026.Services
                 .Update(usuario);
 
             return usuario;
+        }
+
+
+        // ==========================================
+        // CAMBIAR ROL
+        // ==========================================
+
+        public async Task<bool> CambiarRol(
+            Guid userId,
+            string nuevoRol)
+        {
+            // Validar que solamente existan estos roles
+            if (nuevoRol != "EMPLEADO" &&
+                nuevoRol != "SOPORTE")
+            {
+                return false;
+            }
+
+            var usuario = await ObtenerPorId(userId);
+
+            if (usuario == null)
+                return false;
+
+            usuario.Role = nuevoRol;
+
+            await _client
+                .From<Usuario>()
+                .Update(usuario);
+
+            return true;
         }
     }
 }

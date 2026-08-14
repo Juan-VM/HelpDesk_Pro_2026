@@ -9,15 +9,18 @@ namespace HelpDesk_Pro_2026.Controllers
         private readonly UserService _userService;
         private readonly StorageService _storageService;
         private readonly AuthService _authService;
+        private readonly UserAdministrationService _userAdministrationService;
 
         public UsersController(
             UserService userService,
             StorageService storageService,
-            AuthService authService)
+            AuthService authService,
+            UserAdministrationService userAdministrationService)
         {
             _userService = userService;
             _storageService = storageService;
             _authService = authService;
+            _userAdministrationService = userAdministrationService;
         }
 
         // ==========================================
@@ -354,5 +357,148 @@ namespace HelpDesk_Pro_2026.Controllers
 
             return RedirectToAction("Profile");
         }
+
+
+
+
+
+        // ==========================================
+        // ADMINISTRAR USUARIOS
+        // GET: /Users/Index
+        // ==========================================
+
+        [HttpGet]
+        public async Task<IActionResult> Index()
+        {
+            // ==========================================
+            // VERIFICAR SESIÓN
+            // ==========================================
+
+            var userId = HttpContext.Session.GetString("UserId");
+            var role = HttpContext.Session.GetString("Role");
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+
+            // ==========================================
+            // VERIFICAR SUPERUSUARIO
+            // ==========================================
+
+            if (!string.Equals(
+                role,
+                "SUPERUSUARIO",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                return RedirectToAction("Dashboard", "Home");
+            }
+
+
+            // ==========================================
+            // OBTENER USUARIOS
+            // ==========================================
+
+            try
+            {
+                var usuarios =
+                    await _userAdministrationService.ObtenerTodosAsync();
+
+                var model = new AdministrarUsuariosViewModel
+                {
+                    Usuarios = usuarios
+                };
+
+                return View(model);
+            }
+            catch (Exception)
+            {
+                TempData["Error"] =
+                    "No se pudieron cargar los usuarios.";
+
+                return View(
+                    new AdministrarUsuariosViewModel()
+                );
+            }
+        }
+
+
+
+        // ==========================================
+        // CAMBIAR ROL DE USUARIO
+        // POST: /Users/CambiarRol
+        // ==========================================
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CambiarRol(
+            Guid userId,
+            string role)
+        {
+            // ==========================================
+            // VERIFICAR SESIÓN
+            // ==========================================
+
+            var sessionUserId =
+                HttpContext.Session.GetString("UserId");
+
+            var sessionRole =
+                HttpContext.Session.GetString("Role");
+
+            if (string.IsNullOrEmpty(sessionUserId))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+
+            // ==========================================
+            // VERIFICAR SUPERUSUARIO
+            // ==========================================
+
+            if (!string.Equals(
+                sessionRole,
+                "SUPERUSUARIO",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                return RedirectToAction("Dashboard", "Home");
+            }
+
+
+            // ==========================================
+            // VALIDAR ROL
+            // ==========================================
+
+            if (role != "EMPLEADO" &&
+                role != "SOPORTE")
+            {
+                TempData["Error"] =
+                    "El rol seleccionado no es válido.";
+
+                return RedirectToAction("Index");
+            }
+
+
+            // ==========================================
+            // CAMBIAR ROL
+            // ==========================================
+
+            try
+            {
+                await _userAdministrationService
+                    .CambiarRolAsync(userId, role);
+
+                TempData["Success"] =
+                    "El rol del usuario se actualizó correctamente.";
+            }
+            catch (Exception)
+            {
+                TempData["Error"] =
+                    "No se pudo actualizar el rol del usuario.";
+            }
+
+            return RedirectToAction("Index");
+        }
+
     }
 }

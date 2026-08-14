@@ -24,7 +24,7 @@ builder.Services.AddSingleton<Supabase.Client>(serviceProvider =>
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<StorageService>();
-
+builder.Services.AddScoped<UserAdministrationService>();
 
 var app = builder.Build();
 

@@ -176,9 +176,7 @@
                     Enterprise Support
                 </p>
             </div>
-
         </div>
-
 
         <!-- NEW TICKET -->
         <div class="px-4 mb-6">
@@ -193,9 +191,7 @@
                 </span>
 
                 New Ticket
-
             </a>
-
         </div>
 
 
@@ -215,15 +211,12 @@
                     </span>
 
                     Tickets
-
                 </a>
-
             </li>
 
 
             <!-- SYSTEMS -->
             <li>
-
                 <a href="#"
                    class="flex items-center gap-3 px-4 py-3 rounded text-on-surface-variant dark:text-outline-variant hover:bg-surface-container dark:hover:bg-surface-container-highest transition-colors duration-200 active:scale-95 transition-transform border-l-4 border-transparent">
 
@@ -233,9 +226,7 @@
                     </span>
 
                     Systems
-
                 </a>
-
             </li>
 
 
@@ -251,28 +242,7 @@
                     </span>
 
                     Categories
-
                 </a>
-
-            </li>
-
-
-            <!-- USERS -->
-            <li>
-
-                <a asp-controller="Users"
-                   asp-action="Index"
-                   class="flex items-center gap-3 px-4 py-3 rounded text-on-surface-variant dark:text-outline-variant hover:bg-surface-container dark:hover:bg-surface-container-highest transition-colors duration-200 active:scale-95 transition-transform border-l-4 border-transparent">
-
-                    <span class="material-symbols-outlined"
-                          data-icon="group">
-                        group
-                    </span>
-
-                    Users
-
-                </a>
-
             </li>
 
 
@@ -291,9 +261,31 @@
                     Profile
 
                 </a>
-
             </li>
 
+            <!-- ADMIN USERS -->
+            @if (role == "SUPERUSUARIO")
+            {
+                <!-- ADMIN USERS -->
+
+                <li>
+
+                    <a asp-controller="AdminUsers"
+                       asp-action="Index"
+                       class="flex items-center gap-3 px-4 py-3 rounded text-on-surface-variant dark:text-outline-variant hover:bg-surface-container dark:hover:bg-surface-container-highest transition-colors duration-200 active:scale-95 transition-transform border-l-4 border-transparent">
+
+                        <span class="material-symbols-outlined">
+                            manage_accounts
+                        </span>
+
+                        <span>
+                            Administrar Usuarios
+                        </span>
+
+                    </a>
+
+                </li>
+            }
         </ul>
 
 
@@ -309,7 +301,6 @@
                 <p class="font-label-sm text-on-surface-variant">
                     @role
                 </p>
-
             </div>
 
             <a asp-controller="Account"
@@ -322,9 +313,7 @@
 
                 Cerrar sesión
             </a>
-
         </div>
-
     </nav>
 
     <!-- HEADER -->
