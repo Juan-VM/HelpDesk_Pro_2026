@@ -1,0 +1,232 @@
+﻿@model IEnumerable<HelpDesk_Pro_2026.Models.Ticket>
+
+@{
+    ViewData["Title"] = "Gestión de Tickets";
+    Layout = "_DashboardLayout";
+    string userRole = (ViewBag.UserRole as string ?? "EMPLEADO").Trim().ToUpperInvariant();
+}
+
+<div class="p-6 max-w-7xl mx-auto space-y-6">
+    <!-- Header Section -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-on-surface">Gestión de Tickets</h1>
+            <p class="text-on-surface-variant text-sm">Visualice, filtre y administre las solicitudes de soporte técnico.</p>
+        </div>
+
+        @if (userRole != "SOPORTE")
+        {
+            <a asp-action="Create" class="inline-flex items-center px-4 py-2.5 bg-primary hover:opacity-90 text-on-primary font-medium text-sm rounded-lg shadow-sm transition-opacity gap-2 cursor-pointer">
+                <span class="material-symbols-outlined text-lg">add</span>
+                Nuevo Ticket
+            </a>
+        }
+    </div>
+
+    <!-- Alerts -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="p-4 text-sm text-green-800 rounded-lg bg-green-50 border border-green-200 flex items-center gap-2">
+            <span class="material-symbols-outlined text-lg">check_circle</span>
+            <span><strong class="font-semibold">¡Éxito!</strong> @TempData["SuccessMessage"]</span>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="p-4 text-sm text-red-800 rounded-lg bg-red-50 border border-red-200 flex items-center gap-2">
+            <span class="material-symbols-outlined text-lg">error</span>
+            <span><strong class="font-semibold">Error:</strong> @TempData["ErrorMessage"]</span>
+        </div>
+    }
+
+    <!-- FILTER BAR CARD -->
+    <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant p-5">
+        <form method="get" asp-action="Index" class="space-y-4">
+            <div class="flex items-center gap-2 text-primary font-semibold text-sm border-b border-outline-variant pb-2">
+                <span class="material-symbols-outlined text-base">filter_list</span>
+                <span>Filtros de Búsqueda</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                <!-- Usuario -->
+                <div>
+                    <label class="block text-xs font-medium text-on-surface mb-1">Usuario</label>
+                    <select name="searchUserId" asp-items="ViewBag.Users" class="w-full rounded-lg border-outline-variant border p-2 text-xs bg-surface focus:ring-2 focus:ring-primary focus:outline-none">
+                        <option value="">-- Todos los usuarios --</option>
+                    </select>
+                </div>
+
+                <!-- Fecha Desde -->
+                <div>
+                    <label class="block text-xs font-medium text-on-surface mb-1">Fecha Desde</label>
+                    <input type="date" name="startDate" value="@ViewBag.StartDate" class="w-full rounded-lg border-outline-variant border p-2 text-xs bg-surface focus:ring-2 focus:ring-primary focus:outline-none" />
+                </div>
+
+                <!-- Fecha Hasta -->
+                <div>
+                    <label class="block text-xs font-medium text-on-surface mb-1">Fecha Hasta</label>
+                    <input type="date" name="endDate" value="@ViewBag.EndDate" class="w-full rounded-lg border-outline-variant border p-2 text-xs bg-surface focus:ring-2 focus:ring-primary focus:outline-none" />
+                </div>
+
+                <!-- Estado -->
+                <div>
+                    <label class="block text-xs font-medium text-on-surface mb-1">Estado</label>
+                    <select name="stateId" asp-items="ViewBag.States" class="w-full rounded-lg border-outline-variant border p-2 text-xs bg-surface focus:ring-2 focus:ring-primary focus:outline-none">
+                        <option value="">-- Todos los estados --</option>
+                    </select>
+                </div>
+
+                <!-- Sistema -->
+                <div>
+                    <label class="block text-xs font-medium text-on-surface mb-1">Sistema</label>
+                    <select name="systemId" asp-items="ViewBag.Systems" class="w-full rounded-lg border-outline-variant border p-2 text-xs bg-surface focus:ring-2 focus:ring-primary focus:outline-none">
+                        <option value="">-- Todos los sistemas --</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Filter Buttons -->
+            <div class="flex justify-end gap-2 pt-2">
+                <a asp-action="Index" class="px-4 py-2 bg-surface hover:bg-surface-variant text-on-surface-variant text-xs font-medium rounded-lg transition-colors border border-outline-variant inline-flex items-center gap-1">
+                    <span class="material-symbols-outlined text-sm">restart_alt</span> Limpiar
+                </a>
+                <button type="submit" class="px-4 py-2 bg-primary hover:opacity-90 text-on-primary text-xs font-medium rounded-lg transition-opacity inline-flex items-center gap-1 cursor-pointer">
+                    <span class="material-symbols-outlined text-sm">search</span> Filtrar
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Table Container -->
+    <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left text-on-surface-variant">
+                <thead class="text-xs text-on-surface uppercase bg-surface-container-low border-b border-outline-variant">
+                    <tr>
+                        <th scope="col" class="px-4 py-3">Código / Fecha</th>
+                        <th scope="col" class="px-4 py-3">Sistema</th>
+                        <th scope="col" class="px-4 py-3">Asunto / Descripción</th>
+                        <th scope="col" class="px-4 py-3">Solicitante</th>
+                        <th scope="col" class="px-4 py-3">Técnico Asignado</th>
+                        <th scope="col" class="px-4 py-3">Riesgo</th>
+                        <th scope="col" class="px-4 py-3">Estado</th>
+                        <th scope="col" class="px-4 py-3">Adjuntos</th>
+                        <th scope="col" class="px-4 py-3 text-right">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-outline-variant">
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="9" class="px-6 py-8 text-center text-on-surface-variant">
+                                No se encontraron tickets registrados que coincidan con el criterio.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var ticket in Model)
+                        {
+                            <tr class="hover:bg-surface-container transition-colors duration-150">
+                                <!-- ID & Fecha -->
+                                <td class="px-4 py-4 whitespace-nowrap">
+                                    <div class="font-bold text-on-surface">@ticket.TicketCode</div>
+                                    <div class="text-xs text-outline">@ticket.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</div>
+                                </td>
+
+                                <!-- Sistema -->
+                                <td class="px-4 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 rounded bg-surface-container text-xs font-medium text-on-surface border border-outline-variant">
+                                        @(ticket.System?.Name ?? "N/A")
+                                    </span>
+                                </td>
+
+                                <!-- Asunto / Descripción -->
+                                <td class="px-4 py-4 max-w-xs">
+                                    <div class="font-semibold text-on-surface truncate" title="@ticket.Subject">@ticket.Subject</div>
+                                    <div class="text-xs text-on-surface-variant line-clamp-1" title="@ticket.Description">@ticket.Description</div>
+                                </td>
+
+                                <!-- Solicitante -->
+                                <td class="px-4 py-4 whitespace-nowrap">
+                                    <span class="font-medium text-on-surface">
+                                        @(ticket.Requester?.FullName ?? "N/A")
+                                    </span>
+                                </td>
+
+                                <!-- Técnico Asignado -->
+                                <td class="px-4 py-4 whitespace-nowrap">
+                                    <div class="flex items-center gap-2">
+                                        @if (!string.IsNullOrEmpty(ticket.AssignedTech?.PhotoUrl))
+                                        {
+                                            <img src="@ticket.AssignedTech.PhotoUrl" alt="@ticket.AssignedTech.FullName" class="w-7 h-7 rounded-full object-cover border border-outline-variant" />
+                                        }
+                                        else
+                                        {
+                                            <div class="w-7 h-7 rounded-full bg-primary/10 text-primary font-bold flex items-center justify-center text-xs border border-primary/20">
+                                                @(ticket.AssignedTech?.FullName?.Substring(0, 1).ToUpper() ?? "T")
+                                            </div>
+                                        }
+                                        <span class="text-xs font-medium text-on-surface">
+                                            @(ticket.AssignedTech?.FullName ?? "Sin Asignar")
+                                        </span>
+                                    </div>
+                                </td>
+
+                                <!-- Riesgo -->
+                                <td class="px-4 py-4 whitespace-nowrap">
+                                    <span class="px-2.5 py-1 rounded-full text-xs font-semibold" style="background-color: @(ticket.Risk?.Color ?? "#e2e8f0")20; color: @(ticket.Risk?.Color ?? "#475569");">
+                                        @(ticket.Risk?.Name ?? "N/A")
+                                    </span>
+                                </td>
+
+                                <!-- Estado -->
+                                <td class="px-4 py-4 whitespace-nowrap">
+                                    <span class="px-2.5 py-1 rounded-md text-xs font-semibold bg-surface-container-high text-primary border border-outline-variant">
+                                        @(ticket.State?.Name ?? "PENDIENTE")
+                                    </span>
+                                </td>
+
+                                <!-- Adjuntos -->
+                                <td class="px-4 py-4">
+                                    @if (ticket.Attachments != null && ticket.Attachments.Any())
+                                    {
+                                        <div class="flex flex-col gap-1 max-w-[140px]">
+                                            @foreach (var file in ticket.Attachments)
+                                            {
+                                                <a href="@file.FileUrl" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline truncate" title="@file.FileName">
+                                                    <span class="material-symbols-outlined text-sm shrink-0">attach_file</span>
+                                                    <span class="truncate">@file.FileName</span>
+                                                </a>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-xs text-outline">Sin adjuntos</span>
+                                    }
+                                </td>
+
+                                <!-- Acciones -->
+                                <td class="px-4 py-4 text-right whitespace-nowrap">
+                                    @if (userRole == "SOPORTE")
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@ticket.TicketId" class="font-medium text-primary hover:underline inline-flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-base">tune</span> Gestionar Ticket
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@ticket.TicketId" class="font-medium text-primary hover:underline inline-flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-base">visibility</span> Ver / Editar
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

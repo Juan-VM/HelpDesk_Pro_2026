@@ -112,9 +112,10 @@ namespace HelpDesk_Pro_2026.Controllers
                     session.RefreshToken
                 );
 
+                // ✅ REDIRECT TO FAST TICKETS PAGE AFTER LOGIN
                 return RedirectToAction(
-                    "Dashboard",
-                    "Home"
+                    "Index",
+                    "Tickets"
                 );
             }
             catch (Exception ex)
@@ -144,8 +145,7 @@ namespace HelpDesk_Pro_2026.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(
-    RegisterViewModel model)
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (!ModelState.IsValid)
                 return View(model);

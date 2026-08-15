@@ -1,4 +1,10 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var userId = Context.Session.GetString("UserId");
+    var userRole = Context.Session.GetString("Role");
+    var fullName = Context.Session.GetString("FullName");
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -10,15 +16,43 @@
     <link rel="stylesheet" href="~/HelpDesk_Pro_2026.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/app.css" />
 </head>
-<body>
-    <div class="min-h-screen flex items-center justify-center">
+<body class="min-h-screen flex flex-col">
 
-        <main role="main" class="max-w-7xl w-full px-4">
+    <!-- Header bar (Only shown when user is logged in) -->
+    @if (!string.IsNullOrEmpty(userId))
+    {
+        <header class="w-full bg-dark text-white py-3 border-bottom shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 d-flex justify-content-between align-items-center">
+                <a asp-controller="Home" asp-action="Index" class="text-white fw-bold text-decoration-none fs-5">
+                    HelpDesk Pro
+                </a>
+                <div class="d-flex align-items-center gap-3">
+                    <a asp-controller="Tickets" asp-action="Index" class="text-white text-decoration-none">
+                        Tickets
+                    </a>
+
+                    <!-- Dashboard Link: Restricted to SUPERUSUARIO and SOPORTE -->
+                    @if (userRole == "SUPERUSUARIO" || userRole == "SOPORTE")
+                    {
+                        <a asp-controller="Home" asp-action="Dashboard" class="text-warning text-decoration-none fw-bold">
+                            Dashboard
+                        </a>
+                    }
+
+                    <span class="text-light ms-2">@fullName (@userRole)</span>
+                    <a asp-controller="Account" asp-action="Logout" class="btn btn-outline-danger btn-sm">Salir</a>
+                </div>
+            </div>
+        </header>
+    }
+
+    <!-- Main Content Container (Centers inner views) -->
+    <div class="flex-grow flex items-center justify-center">
+        <main role="main" class="max-w-7xl w-full px-4 flex justify-center items-center">
             @RenderBody()
         </main>
     </div>
 
-   
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
