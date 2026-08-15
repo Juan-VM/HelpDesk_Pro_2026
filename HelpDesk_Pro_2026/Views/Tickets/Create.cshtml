@@ -1,0 +1,104 @@
+﻿@model HelpDesk_Pro_2026.Models.CreateTicketViewModel
+
+@{
+    ViewData["Title"] = "Crear Nuevo Ticket";
+    Layout = "_DashboardLayout";
+}
+
+<div class="p-6 max-w-5xl mx-auto">
+    <!-- Header -->
+    <div class="mb-6">
+        <a asp-action="Index" class="text-sm font-medium text-on-surface-variant hover:text-primary inline-flex items-center mb-2 gap-1">
+            <span class="material-symbols-outlined text-sm">arrow_back</span> Volver a la lista
+        </a>
+        <h1 class="text-2xl font-bold text-on-surface">Crear Nuevo Ticket</h1>
+        <p class="text-on-surface-variant text-sm">Complete el formulario para enviar una solicitud de soporte.</p>
+    </div>
+
+    <!-- Form Card -->
+    <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant p-6">
+        <form asp-action="Create" method="post" enctype="multipart/form-data" class="space-y-6">
+            @Html.AntiForgeryToken()
+
+            @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ErrorCount > 0)
+            {
+                <div class="p-4 text-sm text-red-800 rounded-lg bg-red-50 border border-red-200">
+                    <div asp-validation-summary="All" class="text-sm"></div>
+                </div>
+            }
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Sistema -->
+                <div>
+                    <label asp-for="SystemId" class="block text-sm font-medium text-on-surface mb-1">Sistema Afectado *</label>
+                    <select asp-for="SystemId" asp-items="ViewBag.Systems" class="w-full rounded-lg border-outline-variant border p-2.5 text-sm bg-surface focus:ring-2 focus:ring-primary focus:outline-none">
+                        <option value="">-- Seleccione un sistema --</option>
+                    </select>
+                    <span asp-validation-for="SystemId" class="text-xs text-red-600 mt-1 block"></span>
+                </div>
+
+                <!-- Categoría -->
+                <div>
+                    <label asp-for="CategoryId" class="block text-sm font-medium text-on-surface mb-1">Categoría *</label>
+                    <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="w-full rounded-lg border-outline-variant border p-2.5 text-sm bg-surface focus:ring-2 focus:ring-primary focus:outline-none">
+                        <option value="">-- Seleccione una categoría --</option>
+                    </select>
+                    <span asp-validation-for="CategoryId" class="text-xs text-red-600 mt-1 block"></span>
+                </div>
+
+                <!-- Prioridad -->
+                <div>
+                    <label asp-for="PriorityId" class="block text-sm font-medium text-on-surface mb-1">Prioridad *</label>
+                    <select asp-for="PriorityId" asp-items="ViewBag.Priorities" class="w-full rounded-lg border-outline-variant border p-2.5 text-sm bg-surface focus:ring-2 focus:ring-primary focus:outline-none">
+                        <option value="">-- Seleccione prioridad --</option>
+                    </select>
+                    <span asp-validation-for="PriorityId" class="text-xs text-red-600 mt-1 block"></span>
+                </div>
+
+                <!-- Nivel de Riesgo -->
+                <div>
+                    <label asp-for="RiskId" class="block text-sm font-medium text-on-surface mb-1">Nivel de Riesgo *</label>
+                    <select asp-for="RiskId" asp-items="ViewBag.RiskLevels" class="w-full rounded-lg border-outline-variant border p-2.5 text-sm bg-surface focus:ring-2 focus:ring-primary focus:outline-none">
+                        <option value="">-- Seleccione nivel de riesgo --</option>
+                    </select>
+                    <span asp-validation-for="RiskId" class="text-xs text-red-600 mt-1 block"></span>
+                </div>
+            </div>
+
+            <!-- Asunto -->
+            <div>
+                <label asp-for="Subject" class="block text-sm font-medium text-on-surface mb-1">Asunto / Título Resumido *</label>
+                <input asp-for="Subject" placeholder="Ej. Error al exportar reporte de planilla" class="w-full rounded-lg border-outline-variant border p-2.5 text-sm bg-surface focus:ring-2 focus:ring-primary focus:outline-none" />
+                <span asp-validation-for="Subject" class="text-xs text-red-600 mt-1 block"></span>
+            </div>
+
+            <!-- Descripción -->
+            <div>
+                <label asp-for="Description" class="block text-sm font-medium text-on-surface mb-1">Descripción Detallada *</label>
+                <textarea asp-for="Description" rows="4" placeholder="Describa el problema o solicitud con la mayor cantidad de detalle posible..." class="w-full rounded-lg border-outline-variant border p-2.5 text-sm bg-surface focus:ring-2 focus:ring-primary focus:outline-none"></textarea>
+                <span asp-validation-for="Description" class="text-xs text-red-600 mt-1 block"></span>
+            </div>
+
+            <!-- Justificación -->
+            <div>
+                <label asp-for="Justification" class="block text-sm font-medium text-on-surface mb-1">Justificación (Opcional)</label>
+                <textarea asp-for="Justification" rows="2" placeholder="Cualquier contexto adicional o impacto en el negocio..." class="w-full rounded-lg border-outline-variant border p-2.5 text-sm bg-surface focus:ring-2 focus:ring-primary focus:outline-none"></textarea>
+            </div>
+
+            <!-- Archivo Adjunto -->
+            <div>
+                <label asp-for="Attachments" class="block text-sm font-medium text-on-surface mb-1">Adjuntar Archivo(s) / Captura(s) (Opcional)</label>
+                <input asp-for="Attachments" type="file" multiple class="w-full rounded-lg border-outline-variant border p-2 text-sm bg-surface text-on-surface-variant focus:ring-2 focus:ring-primary focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-on-primary hover:file:opacity-90 cursor-pointer" />
+                <span asp-validation-for="Attachments" class="text-xs text-red-600 mt-1 block"></span>
+            </div>
+
+            <!-- Form Buttons -->
+            <div class="flex justify-end gap-3 pt-4 border-t border-outline-variant">
+                <a asp-action="Index" class="px-5 py-2.5 bg-surface hover:bg-surface-variant text-on-surface-variant text-sm font-medium rounded-lg transition-colors">Cancelar</a>
+                <button type="submit" class="px-5 py-2.5 bg-primary hover:opacity-90 text-on-primary font-medium text-sm rounded-lg shadow-sm transition-opacity cursor-pointer">
+                    Guardar Ticket
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

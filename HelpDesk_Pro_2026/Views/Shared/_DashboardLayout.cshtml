@@ -2,7 +2,15 @@
 
 @{
     var nombre = Context.Session.GetString("FullName");
-    var role = Context.Session.GetString("Role");
+    var rawRole = Context.Session.GetString("Role") ?? Context.Session.GetString("UserRole");
+    var roleNormalized = rawRole?.Trim().ToUpperInvariant() ?? "EMPLEADO";
+
+    var headerPhotoUrl = Context.Session.GetString("PhotoUrl");
+
+    if (string.IsNullOrEmpty(headerPhotoUrl))
+    {
+        headerPhotoUrl = "https://dgrlsgmyefeijwczbyfi.supabase.co/storage/v1/object/public/profile-photos/default-user.png";
+    }
 }
 
 <!DOCTYPE html>
@@ -16,134 +24,132 @@
 
     <title>@ViewData["Title"] - HelpDesk Pro</title>
 
-    <!-- Tu CSS -->
+    <!-- CSS -->
     <link rel="stylesheet"
           href="~/css/site.css"
           asp-append-version="true" />
 
     @RenderSection("Styles", required: false)
 
-
-
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+
     <script id="tailwind-config">
-        tailwind.config = {
-        darkMode: "class",
-        theme: {
-        extend: {
-        "colors": {
-        "on-secondary-fixed": "#002113",
-        "background": "#f8f9ff",
-        "surface-container-highest": "#d3e4fe",
-        "surface-tint": "#0c56d0",
-        "tertiary-fixed": "#ffddb8",
-        "surface-bright": "#f8f9ff",
-        "surface-container": "#e5eeff",
-        "primary-fixed-dim": "#b2c5ff",
-        "surface-variant": "#d3e4fe",
-        "on-error-container": "#93000a",
-        "surface-container-low": "#eff4ff",
-        "on-primary-fixed": "#001848",
-        "on-surface": "#0b1c30",
-        "on-primary": "#ffffff",
-        "surface-container-lowest": "#ffffff",
-        "on-secondary-fixed-variant": "#005236",
-        "secondary-fixed-dim": "#4edea3",
-        "surface": "#f8f9ff",
-        "on-secondary-container": "#00714d",
-        "on-tertiary": "#ffffff",
-        "on-tertiary-container": "#ffc988",
-        "surface-container-high": "#dce9ff",
-        "on-surface-variant": "#434654",
-        "on-error": "#ffffff",
-        "error-container": "#ffdad6",
-        "on-tertiary-fixed": "#2a1700",
-        "outline-variant": "#c3c6d6",
-        "secondary-fixed": "#6ffbbe",
-        "on-secondary": "#ffffff",
-        "inverse-on-surface": "#eaf1ff",
-        "tertiary": "#603b00",
-        "on-primary-container": "#c4d2ff",
-        "inverse-surface": "#213145",
-        "outline": "#737685",
-        "primary-container": "#0052cc",
-        "surface-dim": "#cbdbf5",
-        "primary": "#003d9b",
-        "tertiary-container": "#805000",
-        "secondary-container": "#6cf8bb",
-        "on-primary-fixed-variant": "#0040a2",
-        "tertiary-fixed-dim": "#ffb95f",
-        "inverse-primary": "#b2c5ff",
-        "secondary": "#006c49",
-        "on-background": "#0b1c30",
-        "on-tertiary-fixed-variant": "#653e00",
-        "error": "#ba1a1a",
-        "primary-fixed": "#dae2ff"
-        },
-        "borderRadius": {
-        "DEFAULT": "0.125rem",
-        "lg": "0.25rem",
-        "xl": "0.5rem",
-        "full": "0.75rem"
-        },
-        "spacing": {
-        "unit": "4px",
-        "container-padding": "24px",
-        "sidebar-collapsed": "64px",
-        "gutter": "16px",
-        "sidebar-width": "260px"
-        },
-        "fontFamily": {
-        "body-lg": ["Inter"],
-        "label-sm": ["Inter"],
-        "display": ["Inter"],
-        "body-md": ["Inter"],
-        "headline-lg": ["Inter"],
-        "label-md": ["Inter"],
-        "headline-md": ["Inter"]
-        },
-        "fontSize": {
-        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
-        "label-sm": ["11px", { "lineHeight": "14px", "fontWeight": "500" }],
-        "display": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
-        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
-        "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
-        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
-        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }]
-        }
-        }
-        }
-        }
+            tailwind.config = {
+                darkMode: "class",
+                theme: {
+                    extend: {
+                        "colors": {
+                            "on-secondary-fixed": "#002113",
+                            "background": "#f8f9ff",
+                            "surface-container-highest": "#d3e4fe",
+                            "surface-tint": "#0c56d0",
+                            "tertiary-fixed": "#ffddb8",
+                            "surface-bright": "#f8f9ff",
+                            "surface-container": "#e5eeff",
+                            "primary-fixed-dim": "#b2c5ff",
+                            "surface-variant": "#d3e4fe",
+                            "on-error-container": "#93000a",
+                            "surface-container-low": "#eff4ff",
+                            "on-primary-fixed": "#001848",
+                            "on-surface": "#0b1c30",
+                            "on-primary": "#ffffff",
+                            "surface-container-lowest": "#ffffff",
+                            "on-secondary-fixed-variant": "#005236",
+                            "secondary-fixed-dim": "#4edea3",
+                            "surface": "#f8f9ff",
+                            "on-secondary-container": "#00714d",
+                            "on-tertiary": "#ffffff",
+                            "on-tertiary-container": "#ffc988",
+                            "surface-container-high": "#dce9ff",
+                            "on-surface-variant": "#434654",
+                            "on-error": "#ffffff",
+                            "error-container": "#ffdad6",
+                            "on-tertiary-fixed": "#2a1700",
+                            "outline-variant": "#c3c6d6",
+                            "secondary-fixed": "#6ffbbe",
+                            "on-secondary": "#ffffff",
+                            "inverse-on-surface": "#eaf1ff",
+                            "tertiary": "#603b00",
+                            "on-primary-container": "#c4d2ff",
+                            "inverse-surface": "#213145",
+                            "outline": "#737685",
+                            "primary-container": "#0052cc",
+                            "surface-dim": "#cbdbf5",
+                            "primary": "#003d9b",
+                            "tertiary-container": "#805000",
+                            "secondary-container": "#6cf8bb",
+                            "on-primary-fixed-variant": "#0040a2",
+                            "tertiary-fixed-dim": "#ffb95f",
+                            "inverse-primary": "#b2c5ff",
+                            "secondary": "#006c49",
+                            "on-background": "#0b1c30",
+                            "on-tertiary-fixed-variant": "#653e00",
+                            "error": "#ba1a1a",
+                            "primary-fixed": "#dae2ff"
+                        },
+                        "borderRadius": {
+                            "DEFAULT": "0.125rem",
+                            "lg": "0.25rem",
+                            "xl": "0.5rem",
+                            "full": "0.75rem"
+                        },
+                        "spacing": {
+                            "unit": "4px",
+                            "container-padding": "24px",
+                            "sidebar-collapsed": "64px",
+                            "gutter": "16px",
+                            "sidebar-width": "260px"
+                        },
+                        "fontFamily": {
+                            "body-lg": ["Inter"],
+                            "label-sm": ["Inter"],
+                            "display": ["Inter"],
+                            "body-md": ["Inter"],
+                            "headline-lg": ["Inter"],
+                            "label-md": ["Inter"],
+                            "headline-md": ["Inter"]
+                        },
+                        "fontSize": {
+                            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                            "label-sm": ["11px", { "lineHeight": "14px", "fontWeight": "500" }],
+                            "display": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                            "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                            "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }]
+                        }
+                    }
+                }
+            }
     </script>
     <style>
-        .material-symbols-outlined {
-        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
+            .material-symbols-outlined {
+                font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            }
 
-        .material-symbols-outlined.fill {
-        font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        /* Custom scrollbar for tables/kanban */
-        ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
-        }
+                .material-symbols-outlined.fill {
+                    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+                }
 
-        ::-webkit-scrollbar-track {
-        background: #f8f9ff;
-        }
+            ::-webkit-scrollbar {
+                width: 8px;
+                height: 8px;
+            }
 
-        ::-webkit-scrollbar-thumb {
-        background: #c3c6d6;
-        border-radius: 4px;
-        }
+            ::-webkit-scrollbar-track {
+                background: #f8f9ff;
+            }
 
-        ::-webkit-scrollbar-thumb:hover {
-        background: #737685;
-        }
+            ::-webkit-scrollbar-thumb {
+                background: #c3c6d6;
+                border-radius: 4px;
+            }
+
+                ::-webkit-scrollbar-thumb:hover {
+                    background: #737685;
+                }
     </style>
 
 </head>
@@ -169,35 +175,49 @@
                     Enterprise Support
                 </p>
             </div>
-
         </div>
 
+        <!-- NEW TICKET (SOPORTE cannot create tickets) -->
+        @if (roleNormalized != "SOPORTE")
+        {
+            <div class="px-4 mb-6">
+                <a asp-controller="Tickets"
+                   asp-action="Create"
+                   class="w-full bg-primary text-on-primary font-label-md text-label-md px-4 py-2 rounded font-semibold transition-colors hover:bg-primary-container active:scale-95 transition-transform flex items-center justify-center gap-2">
 
-        <!-- NEW TICKET -->
-        <div class="px-4 mb-6">
+                    <span class="material-symbols-outlined"
+                          style="font-size: 18px;">
+                        add
+                    </span>
 
-            <a asp-controller="Tickets"
-               asp-action="Create"
-               class="w-full bg-primary text-on-primary font-label-md text-label-md px-4 py-2 rounded font-semibold transition-colors hover:bg-primary-container active:scale-95 transition-transform flex items-center justify-center gap-2">
-
-                <span class="material-symbols-outlined"
-                      style="font-size: 18px;">
-                    add
-                </span>
-
-                New Ticket
-
-            </a>
-
-        </div>
-
+                    New Ticket
+                </a>
+            </div>
+        }
 
         <!-- MENU -->
         <ul class="flex-1 flex flex-col gap-1 px-2 font-body-md text-body-md">
 
+            <!-- DASHBOARD (SUPERUSUARIO & SOPORTE only) -->
+            @if (roleNormalized == "SUPERUSUARIO" || roleNormalized == "SOPORTE")
+            {
+                <li>
+                    <a asp-controller="Home"
+                       asp-action="Dashboard"
+                       class="flex items-center gap-3 px-4 py-3 rounded text-on-surface-variant dark:text-outline-variant hover:bg-surface-container dark:hover:bg-surface-container-highest transition-colors duration-200 active:scale-95 transition-transform border-l-4 border-transparent">
+
+                        <span class="material-symbols-outlined"
+                              data-icon="dashboard">
+                            dashboard
+                        </span>
+
+                        Dashboard
+                    </a>
+                </li>
+            }
+
             <!-- TICKETS -->
             <li>
-
                 <a asp-controller="Tickets"
                    asp-action="Index"
                    class="flex items-center gap-3 px-4 py-3 rounded-r text-on-surface-variant dark:text-outline-variant hover:bg-surface-container dark:hover:bg-surface-container-highest transition-colors duration-200 active:scale-95 transition-transform border-l-4 border-transparent">
@@ -208,70 +228,11 @@
                     </span>
 
                     Tickets
-
                 </a>
-
             </li>
-
-
-            <!-- SYSTEMS -->
-            <li>
-
-                <a href="#"
-                   class="flex items-center gap-3 px-4 py-3 rounded text-on-surface-variant dark:text-outline-variant hover:bg-surface-container dark:hover:bg-surface-container-highest transition-colors duration-200 active:scale-95 transition-transform border-l-4 border-transparent">
-
-                    <span class="material-symbols-outlined"
-                          data-icon="dns">
-                        dns
-                    </span>
-
-                    Systems
-
-                </a>
-
-            </li>
-
-
-            <!-- CATEGORIES -->
-            <li>
-
-                <a href="#"
-                   class="flex items-center gap-3 px-4 py-3 rounded text-on-surface-variant dark:text-outline-variant hover:bg-surface-container dark:hover:bg-surface-container-highest transition-colors duration-200 active:scale-95 transition-transform border-l-4 border-transparent">
-
-                    <span class="material-symbols-outlined"
-                          data-icon="category">
-                        category
-                    </span>
-
-                    Categories
-
-                </a>
-
-            </li>
-
-
-            <!-- USERS -->
-            <li>
-
-                <a asp-controller="Users"
-                   asp-action="Index"
-                   class="flex items-center gap-3 px-4 py-3 rounded text-on-surface-variant dark:text-outline-variant hover:bg-surface-container dark:hover:bg-surface-container-highest transition-colors duration-200 active:scale-95 transition-transform border-l-4 border-transparent">
-
-                    <span class="material-symbols-outlined"
-                          data-icon="group">
-                        group
-                    </span>
-
-                    Users
-
-                </a>
-
-            </li>
-
 
             <!-- PROFILE -->
             <li>
-
                 <a asp-controller="Users"
                    asp-action="Profile"
                    class="flex items-center gap-3 px-4 py-3 rounded text-on-surface-variant dark:text-outline-variant hover:bg-surface-container dark:hover:bg-surface-container-highest transition-colors duration-200 active:scale-95 transition-transform border-l-4 border-transparent">
@@ -282,27 +243,39 @@
                     </span>
 
                     Profile
-
                 </a>
-
             </li>
 
-        </ul>
+            <!-- ADMIN USERS (SUPERUSUARIO only) -->
+            @if (roleNormalized == "SUPERUSUARIO")
+            {
+                <li>
+                    <a asp-controller="AdminUsers"
+                       asp-action="Index"
+                       class="flex items-center gap-3 px-4 py-3 rounded text-on-surface-variant dark:text-outline-variant hover:bg-surface-container dark:hover:bg-surface-container-highest transition-colors duration-200 active:scale-95 transition-transform border-l-4 border-transparent">
 
+                        <span class="material-symbols-outlined">
+                            manage_accounts
+                        </span>
+
+                        <span>
+                            Administrar Usuarios
+                        </span>
+                    </a>
+                </li>
+            }
+        </ul>
 
         <!-- USER / LOGOUT -->
         <div class="px-4 pt-4 border-t border-outline-variant">
-
             <div class="mb-3">
-
                 <p class="font-label-md font-semibold text-on-surface">
                     @nombre
                 </p>
 
                 <p class="font-label-sm text-on-surface-variant">
-                    @role
+                    @roleNormalized
                 </p>
-
             </div>
 
             <a asp-controller="Account"
@@ -314,11 +287,8 @@
                 </span>
 
                 Cerrar sesión
-
             </a>
-
         </div>
-
     </nav>
 
     <!-- HEADER -->
@@ -328,19 +298,14 @@
 
             <img alt="User Profile"
                  class="w-14 h-14 rounded-full border-2 border-surface object-cover cursor-pointer hover:ring-2 hover:ring-primary transition-all"
-                 src="~/lib/screen.png">
-
+                 src="@headerPhotoUrl" />
         </div>
-
     </header>
-    
+
     <!-- MAIN CONTENT -->
     <main class="md:ml-sidebar-width min-h-screen pt-16">
-
         @RenderBody()
-
     </main>
-
 
     @RenderSection("Scripts", required: false)
 

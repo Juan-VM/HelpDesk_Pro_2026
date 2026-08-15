@@ -1,16 +1,89 @@
 ﻿@{
-    Layout = "_DashboardLayout";
     ViewData["Title"] = "Dashboard";
+    Layout = "_DashboardLayout";
+
+    var priorityLabels = ViewBag.PriorityLabels as List<string> ?? new List<string>();
+    var priorityData = ViewBag.PriorityData as List<int> ?? new List<int>();
+    int totalTickets = ViewBag.TotalTickets ?? 0;
 }
 
-<div class="p-8">
+<div class="p-6 max-w-7xl mx-auto space-y-6">
+    <!-- Page Title -->
+    <div>
+        <h1 class="text-2xl font-bold text-on-surface">Panel Principal (Dashboard)</h1>
+        <p class="text-on-surface-variant text-sm">Resumen estadístico del sistema obtenido mediante Entity Framework Core.</p>
+    </div>
 
-    <h1 class="text-3xl font-bold text-on-surface">
-        Dashboard
-    </h1>
+    <!-- Quick Stats Metric Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant shadow-sm flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                <span class="material-symbols-outlined text-2xl">confirmation_number</span>
+            </div>
+            <div>
+                <p class="text-xs font-medium text-on-surface-variant">Total de Tickets Registrados</p>
+                <h3 class="text-2xl font-bold text-on-surface">@totalTickets</h3>
+            </div>
+        </div>
+    </div>
 
-    <p class="mt-2 text-on-surface-variant">
-        Bienvenido a HelpDesk Pro.
-    </p>
+    <!-- Chart Card -->
+    <div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm space-y-4">
+        <div class="flex items-center justify-between border-b border-outline-variant pb-3">
+            <div>
+                <h2 class="text-base font-bold text-on-surface flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">bar_chart</span>
+                    Tickets por Nivel de Prioridad
+                </h2>
+                <p class="text-xs text-on-surface-variant">Consulta generada dinámicamente usando LINQ & EF Core</p>
+            </div>
+            <span class="px-2.5 py-1 bg-green-50 text-green-700 border border-green-200 rounded-md text-xs font-medium">
+                EF Core Active
+            </span>
+        </div>
 
+        <!-- Canvas for Chart.js -->
+        <div class="relative w-full h-72">
+            <canvas id="priorityBarChart"></canvas>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const labels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(priorityLabels));
+            const data = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(priorityData));
+
+            const ctx = document.getElementById('priorityBarChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Cantidad de Tickets',
+                        data: data,
+                        backgroundColor: '#003d9b',
+                        borderColor: '#002868',
+                        borderWidth: 1,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { precision: 0 }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}

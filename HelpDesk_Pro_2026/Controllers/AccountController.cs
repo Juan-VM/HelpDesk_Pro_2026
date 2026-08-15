@@ -6,100 +6,77 @@ namespace HelpDesk_Pro_2026.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly UserService _userService;
-        private readonly AuthService _authService;
+        private const string DEFAULT_PHOTO_URL =
+            "AQUI_VA_LA_URL_DE_DEFAULT_USER";
 
-        public AccountController(
-            UserService userService,
-            AuthService authService)
-        {
-            _userService = userService;
-            _authService = authService;
-        }
+        // ==========================================
+        // INDEX
+        // ==========================================
 
-        // GET: /Account/Index
         [HttpGet]
         public IActionResult Index()
         {
             return View();
         }
 
-        // GET: /Account/Login
+        // ==========================================
+        // LOGIN - GET
+        // ==========================================
+
         [HttpGet]
         public IActionResult Login()
         {
             return View();
         }
 
-        // GET: /Account/Register
-        [HttpGet]
-        public IActionResult Register()
-        {
-            return View();
-        }
+        // ==========================================
+        // LOGIN - POST
+        // ==========================================
 
-        // POST: /Account/Register
         [HttpPost]
-        public async Task<IActionResult> Register(RegisterViewModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-
-            try
-            {
-                bool registrado = await _userService.RegistrarUsuario(
-                    model.Name,
-                    model.Email,
-                    model.Password
-                );
-
-                if (!registrado)
-                {
-                    ViewBag.Error = "Ya existe un usuario con ese correo.";
-                    return View(model);
-                }
-
-                TempData["Success"] =
-                    "Cuenta creada correctamente. Ahora puedes iniciar sesión.";
-
-                return RedirectToAction("Login", "Account");
-            }
-            catch (Exception ex)
-            {
-                ViewBag.Error = "Ocurrió un error: " + ex.Message;
-
-                return View(model);
-            }
-        }
-
-
-        // POST: /Account/Login
-        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (!ModelState.IsValid)
-            {
                 return View(model);
-            }
 
             try
             {
-                var usuario = await _authService.Login(
+                var client = await SupabClient.GetClient();
+
+                var authService = new AuthService(client);
+
+                var session = await authService.LoginAsync(
                     model.Email,
                     model.Password
                 );
 
-                if (usuario == null)
+                if (session == null || session.User == null)
                 {
-                    ViewBag.Error =
-                        "El correo o la contraseña son incorrectos.";
+                    ModelState.AddModelError(
+                        "",
+                        "Correo o contraseña incorrectos."
+                    );
 
                     return View(model);
                 }
 
-                // Guardar información del usuario en sesión
+                Guid userId = Guid.Parse(session.User.Id);
+
+                var userService = new UserService(client);
+
+                var usuario = await userService.ObtenerPorId(userId);
+
+                if (usuario == null)
+                {
+                    ModelState.AddModelError(
+                        "",
+                        "El usuario está autenticado pero no tiene un perfil registrado."
+                    );
+
+                    return View(model);
+                }
+
                 HttpContext.Session.SetString(
                     "UserId",
                     usuario.UserId.ToString()
@@ -120,26 +97,128 @@ namespace HelpDesk_Pro_2026.Controllers
                     usuario.Role
                 );
 
-                // Redirección después del login
-                return RedirectToAction("Dashboard", "Home");
+                HttpContext.Session.SetString(
+                    "PhotoUrl",
+                    usuario.PhotoUrl ?? ""
+                );
+
+                HttpContext.Session.SetString(
+                    "AccessToken",
+                    session.AccessToken
+                );
+
+                HttpContext.Session.SetString(
+                    "RefreshToken",
+                    session.RefreshToken
+                );
+
+                // ✅ REDIRECT TO FAST TICKETS PAGE AFTER LOGIN
+                return RedirectToAction(
+                    "Index",
+                    "Tickets"
+                );
             }
             catch (Exception ex)
             {
-                ViewBag.Error =
-                    "Ocurrió un error al iniciar sesión: "
-                    + ex.Message;
+                ModelState.AddModelError(
+                    "",
+                    "Error al iniciar sesión. Intentalo nuevamente... "
+                );
 
                 return View(model);
             }
         }
 
+        // ==========================================
+        // REGISTER - GET
+        // ==========================================
 
-        // GET: /Account/Logout
         [HttpGet]
-        public IActionResult Logout()
+        public IActionResult Register()
         {
+            return View();
+        }
+
+        // ==========================================
+        // REGISTER - POST
+        // ==========================================
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(RegisterViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            try
+            {
+                var client = await SupabClient.GetClient();
+
+                var authService = new AuthService(client);
+
+                var session = await authService.RegisterAsync(
+                     model.Email,
+                     model.Password,
+                     model.Name
+                 );
+
+                if (session == null)
+                {
+                    ModelState.AddModelError(
+                        "",
+                        "Supabase no devolvió una sesión después del registro."
+                    );
+
+                    return View(model);
+                }
+                if (session.User == null)
+                {
+                    ModelState.AddModelError(
+                        "",
+                        "Supabase no devolvió el usuario."
+                    );
+
+                    return View(model);
+                }
+
+                return RedirectToAction("Login");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(
+                    "",
+                    "Ocurrió un error: " + ex.Message
+                );
+
+                return View(model);
+            }
+        }
+
+        // ==========================================
+        // LOGOUT
+        // ==========================================
+
+        [HttpGet]
+        public async Task<IActionResult> Logout()
+        {
+            try
+            {
+                var client = await SupabClient.GetClient();
+
+                var authService = new AuthService(client);
+
+                await authService.LogoutAsync();
+            }
+            catch (Exception ex)
+            {
+                // No impedimos el cierre de sesión local
+                Console.WriteLine("Error al cerrar sesión en Supabase: " + ex.Message);
+            }
+
+            // Limpiar sesión local
             HttpContext.Session.Clear();
 
+            // Volver al Login
             return RedirectToAction("Login", "Account");
         }
     }
